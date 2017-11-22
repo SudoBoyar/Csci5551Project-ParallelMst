@@ -5,20 +5,25 @@
 #ifndef MPIGRAPHALGORITHMS_DOTGEN_H
 #define MPIGRAPHALGORITHMS_DOTGEN_H
 
+#import <stdio.h>
 #import <string>
 
-void matrixOutput(int **g, int v, string filename) {
+using namespace std;
+
+void matrixOutput(int **g, int v,  const char * filename) {
     FILE * outputFile = fopen(filename, "w");
-    fprintf("strict graph {\n");
+    fprintf(outputFile, "strict graph {\n");
     for (int i = 0; i < v; i++) {
         for (int j = 0; j < i; j++) {
             if (g[i][j] > 0) {
-                fprintf("  %d -- %d [ID=\"%d\"]\n", i, j, g[i][j]);
+                fprintf(outputFile, "  %d -- %d [label=%d]\n", i, j, g[i][j]);
             }
         }
     }
 
-    fprintf("}\n");
+    fprintf(outputFile, "}\n");
+
+    fclose(outputFile);
 }
 
 #endif //MPIGRAPHALGORITHMS_DOTGEN_H

@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+using namespace std;
+
 /********************
  * Default settings *
  ********************/
@@ -19,7 +21,7 @@ struct GraphGenParams {
     int maxWeight = 100;
 
     bool includeNext() {
-        return rand() % pEdgeIn < pEdge;
+        return rand() % pEdgeIn < pEdgeAdd;
     }
 
     /**
@@ -27,17 +29,11 @@ struct GraphGenParams {
      * @param g
      * @param v
      */
-    void initializeGraph(int *g, int v) {
-        g = new int *[v];
-        g[0] = new int[v * v];
-        for (int i = 1; i < v; i++) {
-            g[i] = g[i - 1] + v;
-        }
-
+    void initializeGraph(int **g, int v) {
         for (int i = 0; i < v; i++) {
             for (int j = 0; j < i; j++) {
                 if (includeNext()) {
-                    g[i][j] = g[j][i] = rand() % maxWeight + 1;
+                    g[i][j] = rand() % maxWeight + 1;
                 }
             }
         }
@@ -69,7 +65,7 @@ GraphGenParams graphGenDense(int v) {
     GraphGenParams g = GraphGenParams();
 
     // Connect to ~95%
-    g.pEdgeAdd = v - ceil(0.95 * v);
+    g.pEdgeAdd = ceil(0.95 * v);
     g.pEdgeIn = v;
 
     return g;
@@ -81,6 +77,8 @@ GraphGenParams graphGenSparse(int v) {
     // Connect to ~5%
     g.pEdgeAdd = ceil(0.05 * v);
     g.pEdgeIn = v;
+
+    return g;
 }
 
 #endif //MPIGRAPHALGORITHMS_INITIALIZEGRAPH_H
