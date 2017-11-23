@@ -13,6 +13,9 @@ using namespace std;
 #define NO_EDGE -1001
 #define MAX_WEIGHT 10
 
+#include "Graph.h"
+
+
 /********************
  * Default settings *
  ********************/
@@ -67,6 +70,39 @@ struct GraphGenParams {
                 }
 
                 g[i][newEdge] = randWeight();
+            }
+        }
+    }
+
+    void initializeGraph(Graph g) {
+        for (int i = 0; i < g.length(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (includeNext()) {
+                    g.addEdge(i, j, randWeight());
+                }
+            }
+        }
+
+        // Make sure there's at least one edge on each vertex
+        bool hasEdge = false;
+        int newEdge = 0;
+        for (int i = 0; i < g.length(); i++) {
+            hasEdge = false;
+            for (int j = 0; j < g.length(); j++) {
+                if (g.weight(i, j) != NO_EDGE) {
+                    hasEdge = true;
+                    break;
+                }
+            }
+
+            if (!hasEdge) {
+                // None found, add one to a random other vertex
+                newEdge = rand() % g.length();
+                while (newEdge == i) {
+                    newEdge = rand() % g.length();
+                }
+
+                g.addEdge(i, newEdge, randWeight());
             }
         }
     }
