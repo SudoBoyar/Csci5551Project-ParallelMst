@@ -10,6 +10,9 @@
 
 using namespace std;
 
+#define NO_EDGE -1001
+#define MAX_WEIGHT 10
+
 /********************
  * Default settings *
  ********************/
@@ -18,10 +21,14 @@ struct GraphGenParams {
     int pEdgeAdd = 1;
     int pEdgeIn = 1000;
 
-    int maxWeight = 100;
+    int maxWeight = MAX_WEIGHT;
 
     bool includeNext() {
         return rand() % pEdgeIn < pEdgeAdd;
+    }
+
+    int randWeight() {
+        return rand() % (2 * maxWeight) - maxWeight;
     }
 
     /**
@@ -33,7 +40,9 @@ struct GraphGenParams {
         for (int i = 0; i < v; i++) {
             for (int j = 0; j < i; j++) {
                 if (includeNext()) {
-                    g[i][j] = rand() % maxWeight + 1;
+                    g[i][j] = g[j][i] = randWeight();
+                } else {
+                    g[i][j] = g[j][i] = NO_EDGE;
                 }
             }
         }
@@ -41,12 +50,12 @@ struct GraphGenParams {
         // Make sure there's at least one edge on each vertex
         bool hasEdge = false;
         int newEdge = 0;
-        for ( int i = 0; i < v; i++) {
+        for (int i = 0; i < v; i++) {
             hasEdge = false;
             for (int j = 0; j < v; j++) {
-                if (g[i][j] > 0) {
+                if (g[i][j] != NO_EDGE) {
                     hasEdge = true;
-                    continue;
+                    break;
                 }
             }
 
@@ -56,10 +65,19 @@ struct GraphGenParams {
                 while (newEdge == i) {
                     newEdge = rand() % v;
                 }
+
+                g[i][newEdge] = randWeight();
             }
         }
     }
 };
+
+GraphGenParams noEdges(int v) {
+    GraphGenParams g = GraphGenParams();
+    g.pEdgeAdd = 0;
+
+    return g;
+}
 
 GraphGenParams graphGenDense(int v) {
     GraphGenParams g = GraphGenParams();
