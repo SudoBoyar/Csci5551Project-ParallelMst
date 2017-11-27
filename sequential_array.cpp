@@ -86,14 +86,14 @@ int main() {
     adjacency_matrix_prims(g, mst, v);
 
     // Output input graph
-    snprintf(filename, 100, "sparse_%d_input.dot", v);
+    snprintf(filename, 100, "results/sparse_%d_input.dot", v);
     matrixOutput(g, v, filename);
 
     // Output mst
-    snprintf(filename, 100, "sparse_%d_result.dot", v);
+    snprintf(filename, 100, "results/sparse_%d_result.dot", v);
     matrixOutput(mst, v, filename);
 
     // Output mst highlighted in input graph
-    snprintf(filename, 100, "sparse_%d_mst_overlay.dot", v);
+    snprintf(filename, 100, "results/sparse_%d_mst_overlay.dot", v);
     matrixMstOutput(g, mst, v, filename);
 }
