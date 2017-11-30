@@ -1,12 +1,10 @@
 all: sequential dots
 
-sequential: DotGen.h Graph.h InitializeGraph.h sequential_array.cpp
-	g++ -O3 -o sequential ./sequential_array.cpp
+sequential: DotGen.h Graph.h InitializeGraph.h prims_sequential.cpp
+	g++ -O3 -o sequential ./prims_sequential.cpp
 
-dots: sparse_100_input.dot sparse_100_result.dot
-	dot -Tpng -O results/sparse_100_input.dot
-	dot -Tpng -O results/sparse_100_result.dot
-	dot -Tpng -O results/sparse_100_mst_overlay.dot
+dots: results/*.dot
+	dot -Tpng -O results/*.dot
 
 run:
 	docker run -v `pwd`:/data hamroctopus/graphviz:2.38.0
