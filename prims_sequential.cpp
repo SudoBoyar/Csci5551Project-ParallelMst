@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-//#include <mpi.h>
 
 
 #define VCOUNT 1000
@@ -111,7 +110,7 @@ int main() {
 
     runtime = end - start;
 
-    cout<< "Sequential runs in " << setiosflags(ios::fixed) << setprecision(2) << runtime << " seconds\n";
+    cout<< "Sequential runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime << " seconds\n";
 
 //    char *filename = new char[100];
 //    // Output input graph
