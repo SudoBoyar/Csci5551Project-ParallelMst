@@ -76,7 +76,7 @@ struct Graph {
     }
 
     int weight(int v1, int v2) {
-        vertex(v1).weight(v2);
+        return vertex(v1).weight(v2);
     }
 
     Vertex vertex(int i) {
