@@ -11,7 +11,7 @@
 using namespace std;
 
 #define NO_EDGE -1001
-#define MAX_WEIGHT 10
+#define MAX_WEIGHT 500
 
 #include "Graph.h"
 
@@ -21,10 +21,12 @@ using namespace std;
  ********************/
 struct GraphGenParams {
     // pEdgeAdd/pEdgeIn = probably of adding each edge
-    int pEdgeAdd = 1;
-    int pEdgeIn = 1000;
+    int pEdgeAdd;
+    int pEdgeIn;
 
-    int maxWeight = MAX_WEIGHT;
+    int maxWeight;
+
+    GraphGenParams() : pEdgeAdd(1), pEdgeIn(1000), maxWeight(MAX_WEIGHT) {}
 
     bool includeNext() {
         return rand() % pEdgeIn < pEdgeAdd;
@@ -34,15 +36,34 @@ struct GraphGenParams {
         return rand() % (2 * maxWeight) - maxWeight;
     }
 
+    void fillNoEdge(int **&g, int v) {
+        for (int i = 0; i < v; i++) {
+            for (int j = 0; j <= i; j++) {
+                g[i][j] = g[j][i] = NO_EDGE;
+            }
+        }
+    }
+
     /**
      * Initialize the graph
      * @param g
      * @param v
      */
-    void initializeGraph(int **g, int v) {
+    void initializeGraph(int **&g, int v) {
+        g = new int *[v];
+        g[0] = new int[(long) v * (long) v];
+        for (int i = 1; i < v; i++) {
+            g[i] = g[i - 1] + v;
+        }
+
+        if (pEdgeAdd == 0) {
+            fillNoEdge(g, v);
+            return;
+        }
+
         for (int i = 0; i < v; i++) {
-            for (int j = 0; j < i; j++) {
-                if (includeNext()) {
+            for (int j = 0; j <= i; j++) {
+                if (i != j && includeNext()) {
                     g[i][j] = g[j][i] = randWeight();
                 } else {
                     g[i][j] = g[j][i] = NO_EDGE;
@@ -51,27 +72,26 @@ struct GraphGenParams {
         }
 
         // Make sure there's at least one edge on each vertex
-        bool hasEdge = false;
-        int newEdge = 0;
-        for (int i = 0; i < v; i++) {
-            hasEdge = false;
-            for (int j = 0; j < v; j++) {
-                if (g[i][j] != NO_EDGE) {
-                    hasEdge = true;
-                    break;
-                }
-            }
-
-            if (!hasEdge) {
-                // None found, add one to a random other vertex
-                newEdge = rand() % v;
-                while (newEdge == i) {
-                    newEdge = rand() % v;
-                }
-
-                g[i][newEdge] = randWeight();
-            }
-        }
+//        bool hasEdge = false;
+//        int newEdge = 0;
+//        for (int i = 0; i < v; i++) {
+//            hasEdge = false;
+//            for (int j = 0; j < v; j++) {
+//                if (i != j && g[i][j] != NO_EDGE) {
+//                    hasEdge = true;
+//                    break;
+//                }
+//            }
+//
+//            if (!hasEdge) {
+//                // None found, add one to a random other vertex
+//                newEdge = rand() % v;
+//                while (newEdge == i) {
+//                    newEdge = rand() % v;
+//                }
+//                g[i][newEdge] = g[newEdge][i] = randWeight();
+//            }
+//        }
     }
 
     void initializeGraph(Graph g) {
@@ -129,10 +149,18 @@ GraphGenParams graphGenSparse(int v) {
     GraphGenParams g = GraphGenParams();
 
     // Connect to ~5%
-    g.pEdgeAdd = ceil(0.05 * v);
+    g.pEdgeAdd = ceil(0.1 * v);
     g.pEdgeIn = v;
 
     return g;
+}
+
+void copy(int **source, int **destination, int v) {
+    for (int i = 0; i < v; i++) {
+        for (int j = 0; j < v; j++) {
+            destination[i][j] = source[i][j];
+        }
+    }
 }
 
 #endif //MPIGRAPHALGORITHMS_INITIALIZEGRAPH_H
