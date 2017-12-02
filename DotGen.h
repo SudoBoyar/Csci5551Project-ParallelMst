@@ -5,8 +5,8 @@
 #ifndef MPIGRAPHALGORITHMS_DOTGEN_H
 #define MPIGRAPHALGORITHMS_DOTGEN_H
 
-#import <stdio.h>
-#import <string>
+#include <stdio.h>
+#include <string>
 
 using namespace std;
 
