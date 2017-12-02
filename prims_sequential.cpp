@@ -27,11 +27,11 @@ void printMatrix(int **a, int n) {
     }
 }
 
-void adjacency_matrix_prims(int **g, int **mst, const int v) {
+void adjacency_matrix_prims(short **g, short **mst, const int v) {
     int mst_count = 1;
     bool *in_mst = new bool[v];
     in_mst[0] = true;
-    int *d = new int[v];
+    int *d = new short[v];
     int *e = new int[v];
 
     // Initialize d and e
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Instantiate g and mst
-    int **g, **mst;
+    short **g, **mst;
     float start, end, runtime;
 
     // Initialize g and mst
