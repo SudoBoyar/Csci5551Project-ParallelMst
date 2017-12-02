@@ -36,7 +36,7 @@ struct GraphGenParams {
         return rand() % (2 * maxWeight) - maxWeight;
     }
 
-    void fillNoEdge(int **&g, int v) {
+    void fillNoEdge(short **&g, int v) {
         for (int i = 0; i < v; i++) {
             for (int j = 0; j <= i; j++) {
                 g[i][j] = g[j][i] = NO_EDGE;
