@@ -87,7 +87,7 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
 }
 
 
-bool GetUserInput(int argc, char *argv[], int &v) {
+bool GetUserInput(int argc, char *argv[], int &v, bool &verbose) {
     if (argc < 2) {
         v = 100000;
     } else {
@@ -95,6 +95,12 @@ bool GetUserInput(int argc, char *argv[], int &v) {
         if (v <= 0) {
             cout << "Graphs need vertices" << endl;
             return false;
+        }
+
+        if (argc >= 3) {
+            verbose = true;
+        } else {
+            verbose = false;
         }
     }
 
@@ -104,8 +110,9 @@ bool GetUserInput(int argc, char *argv[], int &v) {
 
 int main(int argc, char *argv[]) {
     int v;
+    bool verbose;
 
-    if (!GetUserInput(argc, argv, v)) {
+    if (!GetUserInput(argc, argv, v, verbose)) {
         exit(1);
     }
 
