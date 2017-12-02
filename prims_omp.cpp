@@ -9,9 +9,6 @@
 #include <time.h>
 
 
-#define VCOUNT 1000
-
-
 #include "InitializeGraph.h"
 #include "DotGen.h"
 
@@ -99,8 +96,27 @@ void adjacency_matrix_prims(int **g, int **mst, const int v) {
 }
 
 
-int main() {
-    int v = 100000;
+bool GetUserInput(int argc, char *argv[], int &v) {
+    if (argc < 2) {
+        v = 100000;
+    } else {
+        v = atoi(argv[1]);
+        if (v <= 0) {
+            cout << "Graphs need vertices" << endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+int main(int argc, char *argv[]) {
+    int v;
+
+    if (!GetUserInput(argc, argv, v)) {
+        exit(1);
+    }
 
     // Instantiate g and mst
     int **g, **mst;
