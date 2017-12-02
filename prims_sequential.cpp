@@ -31,8 +31,11 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
     int mst_count = 1;
     bool *in_mst = new bool[v];
     in_mst[0] = true;
-    int *d = new short[v];
+    short *d = new short[v];
     int *e = new int[v];
+
+    short min_weight;
+    int min_node, min_node_connection;
 
     // Initialize d and e
     for (int i = 0; i < v; i++) {
@@ -44,8 +47,6 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
             e[i] = -1;
         }
     }
-
-    int min_weight, min_node, min_node_connection;
 
     for (int c = 1; c < v; c++) {
         min_node = -1;

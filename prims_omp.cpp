@@ -29,9 +29,10 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
     int mst_count = 1;
     bool *in_mst = new bool[v];
     in_mst[0] = true;
-    int *d = new short[v];
+    short *d = new short[v];
     int *e = new int[v];
-    int min_weight, min_node, min_node_connection;
+    short min_weight;
+    int min_node, min_node_connection;
 
 #pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection)
     {
