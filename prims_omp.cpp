@@ -133,9 +133,9 @@ int main(int argc, char *argv[]) {
 
     // Run it
     printf("Running Prim's\n");
-    start = clock()/(float)CLOCKS_PER_SEC;
+    start = omp_get_wtime();
     adjacency_matrix_prims(g, mst, v);
-    end = clock()/(float)CLOCKS_PER_SEC;
+    end = omp_get_wtime();
 
     runtime = end - start;
 
