@@ -8,7 +8,7 @@
 #include <time.h>
 
 
-#define VCOUNT 1000
+//#define VCOUNT 1000
 
 
 #include "InitializeGraph.h"
@@ -76,7 +76,8 @@ void adjacency_matrix_prims(int **g, int **mst, const int v) {
                     continue;
                 }
 
-                if ((d[j] == NO_EDGE && g[min_node][j] != NO_EDGE) || (d[j] != NO_EDGE && g[min_node][j] != NO_EDGE && g[min_node][j] < d[j])) {
+                if ((d[j] == NO_EDGE && g[min_node][j] != NO_EDGE) ||
+                    (d[j] != NO_EDGE && g[min_node][j] != NO_EDGE && g[min_node][j] < d[j])) {
                     d[j] = g[min_node][j];
                     e[j] = min_node;
                 }
@@ -86,8 +87,27 @@ void adjacency_matrix_prims(int **g, int **mst, const int v) {
 }
 
 
-int main() {
-    int v = 100000;
+bool GetUserInput(int argc, char *argv[], int &v) {
+    if (argc < 2) {
+        v = 100000;
+    } else {
+        v = atoi(argv[1]);
+        if (v <= 0) {
+            cout << "Graphs need vertices" << endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+int main(int argc, char *argv[]) {
+    int v;
+
+    if (!GetUserInput(argc, argv, v)) {
+        exit(1);
+    }
 
     // Instantiate g and mst
     int **g, **mst;
@@ -104,13 +124,13 @@ int main() {
 
     // Run it
     printf("Running Prim's\n");
-    start = clock()/(float)CLOCKS_PER_SEC;
+    start = clock() / (float) CLOCKS_PER_SEC;
     adjacency_matrix_prims(g, mst, v);
-    end = clock()/(float)CLOCKS_PER_SEC;
+    end = clock() / (float) CLOCKS_PER_SEC;
 
     runtime = end - start;
 
-    cout<< "Sequential runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime << " seconds\n";
+    cout << "Sequential runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime << " seconds\n";
 
 //    char *filename = new char[100];
 //    // Output input graph
