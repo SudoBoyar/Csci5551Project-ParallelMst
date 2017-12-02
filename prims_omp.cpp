@@ -25,11 +25,11 @@ void printMatrix(int **a, int n) {
     }
 }
 
-void adjacency_matrix_prims(int **g, int **mst, const int v) {
+void adjacency_matrix_prims(short **g, short **mst, const int v) {
     int mst_count = 1;
     bool *in_mst = new bool[v];
     in_mst[0] = true;
-    int *d = new int[v];
+    int *d = new short[v];
     int *e = new int[v];
     int min_weight, min_node, min_node_connection;
 
@@ -72,7 +72,7 @@ void adjacency_matrix_prims(int **g, int **mst, const int v) {
             if (min_node > -1) {
 //                printf("Adding %d to MST at %d with weight %d\n", min_node, min_node_connection, min_weight);
 
-#pragma omp single nowait
+#pragma omp single
                 {
                     in_mst[min_node] = true;
                     mst[min_node_connection][min_node] = g[min_node_connection][min_node];
@@ -113,13 +113,14 @@ bool GetUserInput(int argc, char *argv[], int &v) {
 
 int main(int argc, char *argv[]) {
     int v;
+    bool verbose;
 
-    if (!GetUserInput(argc, argv, v)) {
+    if (!GetUserInput(argc, argv, v, verbose)) {
         exit(1);
     }
 
     // Instantiate g and mst
-    int **g, **mst;
+    short **g, **mst;
     float start, end, runtime;
 
     // Initialize g and mst
@@ -139,7 +140,7 @@ int main(int argc, char *argv[]) {
 
     runtime = end - start;
 
-    cout<< v << " vertices OpenMP on" << omp_get_num_procs() << " threads/CPUs runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime << " seconds\n";
+    cout<< v << " vertices OpenMP on " << omp_get_num_procs() << " threads/CPUs runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime << " seconds\n";
 
 //    char *filename = new char[100];
 //    // Output input graph
