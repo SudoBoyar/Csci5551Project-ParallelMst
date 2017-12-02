@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
 
     runtime = end - start;
 
-    cout<< v << " vertices OMP runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime << " seconds\n";
+    cout<< v << " vertices OpenMP on" << omp_get_num_procs() << " threads/CPUs runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime << " seconds\n";
 
 //    char *filename = new char[100];
 //    // Output input graph
