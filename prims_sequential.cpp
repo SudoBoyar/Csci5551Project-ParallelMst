@@ -23,12 +23,13 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
     in_mst[0] = true;
     short *d = new short[v];
     int *e = new int[v];
-
     short min_weight;
     int min_node, min_node_connection;
+    int i, c;
 
     // Initialize d and e
-    for (int i = 0; i < v; i++) {
+    for (i = 1; i < v; i++) {
+        in_mst[i] = false;
         if (g[0][i] != NO_EDGE) {
             d[i] = g[0][i];
             e[i] = 0;
@@ -38,39 +39,27 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
         }
     }
 
-    for (int c = 1; c < v; c++) {
+    for (c = 1; c < v; c++) {
         min_node = -1;
         min_node_connection = -1;
         min_weight = MAX_WEIGHT + 1;
 
-        for (int i = 0; i < v; i++) {
-            if (in_mst[i] || d[i] >= min_weight) {
-                // Already in MST, no edge to consider, or we already found a better one
-                continue;
+        for (i = 0; i < v; i++) {
+            if (!in_mst[i] && d[i] < min_weight) {
+                min_node = i;
+                min_weight = d[i];
+                min_node_connection = e[i];
             }
-
-            min_node = i;
-            min_weight = d[i];
-            min_node_connection = e[i];
         }
 
-        // TODO Fix generation so no disconnected components
-        if (min_node > -1) {
-//            printf("Adding %d to MST at %d with weight %d\n", min_node, min_node_connection, min_weight);
+        in_mst[min_node] = true;
+        mst[min_node_connection][min_node] = g[min_node_connection][min_node];
+        mst[min_node][min_node_connection] = g[min_node_connection][min_node];
 
-            in_mst[min_node] = true;
-            mst[min_node_connection][min_node] = g[min_node_connection][min_node];
-            mst[min_node][min_node_connection] = g[min_node_connection][min_node];
-
-            for (int i = 0; i < v; i++) {
-                if (in_mst[i]) {
-                    continue;
-                }
-
-                if (g[min_node][i] < d[i]) {
-                    d[i] = g[min_node][i];
-                    e[i] = min_node;
-                }
+        for (i = 0; i < v; i++) {
+            if (!in_mst[i] && g[min_node][i] < d[i]) {
+                d[i] = g[min_node][i];
+                e[i] = min_node;
             }
         }
     }

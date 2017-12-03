@@ -31,7 +31,8 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
     {
         // Initialize d and e
 #pragma omp for schedule(static)
-        for (i = 0; i < v; i++) {
+        for (i = 1; i < v; i++) {
+            in_mst[i] = false;
             if (g[0][i] != NO_EDGE) {
                 d[i] = g[0][i];
                 e[i] = 0;
@@ -74,7 +75,7 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
                 in_mst[min_node] = true;
                 mst[min_node_connection][min_node] = g[min_node_connection][min_node];
                 mst[min_node][min_node_connection] = g[min_node_connection][min_node];
-            }
+            };
 #pragma omp barrier
 
 #pragma omp for
