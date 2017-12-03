@@ -23,11 +23,11 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
     in_mst[0] = true;
     short *d = new short[v];
     int *e = new int[v];
-    short min_weight;
-    int min_node, min_node_connection;
+    short min_weight, my_min_weight;
+    int min_node, min_node_connection, my_min_node, my_min_connection;
     int i, c;
 
-#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, c)
+#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, c, my_min_weight, my_min_node, my_min_connection)
     {
         // Initialize d and e
 #pragma omp for schedule(static)
@@ -50,24 +50,28 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
                 min_node_connection = -1;
                 min_weight = MAX_WEIGHT + 1;
             };
+
+            my_min = MAX_WEIGHT + 1;
+            my_min_node = -1;
+            my_min_connection = -1;
 #pragma omp barrier
 
 #pragma omp for
             for (i = 0; i < v; i++) {
-                if (in_mst[i] || d[i] >= min_weight) {
-                    // Already in MST, no edge to consider, or we already found a better one
-                    continue;
+                if (!in_mst[i] && d[i] < my_min) {
+                    my_min_node = i;
+                    my_min_weight = d[i];
+                    my_min_connection = e[i];
                 }
-
-#pragma omp critical
-                {
-                    if (d[i] < min_weight) {
-                        min_node = i;
-                        min_weight = d[i];
-                        min_node_connection = e[i];
-                    }
-                };
             }
+#pragma omp critical
+            {
+                if (my_min_weight < min_weight) {
+                    min_node = my_min_node;
+                    min_weight = my_min_weight;
+                    min_node_connection = my_min_connection;
+                }
+            };
 #pragma omp barrier
 
 #pragma omp single
