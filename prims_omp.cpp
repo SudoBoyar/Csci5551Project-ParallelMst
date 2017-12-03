@@ -95,6 +95,77 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
     }
 }
 
+void adjacency_matrix_prims(short **g, short **mst, const int v) {
+    int mst_count = 1;
+    bool *in_mst = new bool[v];
+    in_mst[0] = true;
+    short *d = new short[v];
+    int *e = new int[v];
+    short min_weight;
+    int min_node, min_node_connection;
+    int i, c;
+
+#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, c)
+    {
+        // Initialize d and e
+#pragma omp for schedule(static)
+        for (i = 0; i < v; i++) {
+            if (g[0][i] != NO_EDGE) {
+                d[i] = g[0][i];
+                e[i] = 0;
+            } else {
+                d[i] = NO_EDGE;
+                e[i] = -1;
+            }
+        }
+
+
+        for (c = 1; c < v; c++) {
+#pragma omp single
+            {
+                min_node = -1;
+                min_node_connection = -1;
+                min_weight = MAX_WEIGHT + 1;
+            };
+#pragma omp barrier
+
+#pragma omp for
+            for (i = 0; i < v; i++) {
+                if (in_mst[i] || d[i] >= min_weight) {
+                    // Already in MST, no edge to consider, or we already found a better one
+                    continue;
+                }
+
+#pragma omp critical
+                {
+                    if (d[i] < min_weight) {
+                        min_node = i;
+                        min_weight = d[i];
+                        min_node_connection = e[i];
+                    }
+                };
+            }
+#pragma omp barrier
+
+#pragma omp single
+            {
+                in_mst[min_node] = true;
+                mst[min_node_connection][min_node] = g[min_node_connection][min_node];
+                mst[min_node][min_node_connection] = g[min_node_connection][min_node];
+            }
+#pragma omp barrier
+
+#pragma omp for
+            for (i = 0; i < v; i++) {
+                if (!in_mst[i] && g[min_node][i] < d[i]) {
+                    d[i] = g[min_node][i];
+                    e[i] = min_node;
+                }
+            }
+        }
+    };
+}
+
 int main(int argc, char *argv[]) {
     Arguments args;
 
