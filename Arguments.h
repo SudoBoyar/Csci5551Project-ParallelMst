@@ -25,7 +25,7 @@ Arguments ParseArguments(int argc, char *argv[]) {
             args.seed = atoi(argv[2]) == 1;
 
             if (argc >= 4) {
-                args.print = atoi(argv[3]) == 1;
+                args.print = atoi(argv[3]) == 1 && args.v < 15;
 
                 if (argc >= 5) {
                     args.verbose = atoi(argv[4]) == 1;
