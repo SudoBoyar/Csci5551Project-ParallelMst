@@ -26,7 +26,7 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
     short min_weight;
     int min_node, min_node_connection;
 
-#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection)
+#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, j, c)
     {
         // Initialize d and e
 #pragma omp for
@@ -49,6 +49,7 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
                 min_weight = MAX_WEIGHT + 1;
             }
 
+#pragma omp barrier
 #pragma omp for
             for (int i = 0; i < v; i++) {
                 if (in_mst[i] || d[i] == NO_EDGE || d[i] >= min_weight) {
@@ -63,6 +64,8 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
                     min_node_connection = e[i];
                 }
             }
+
+#pragma omp barrier
 
             // TODO Fix generation so no disconnected components
             if (min_node > -1) {
