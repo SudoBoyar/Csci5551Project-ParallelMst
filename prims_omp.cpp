@@ -51,14 +51,14 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
                 min_weight = MAX_WEIGHT + 1;
             };
 
-            my_min = MAX_WEIGHT + 1;
+            my_min_weight = MAX_WEIGHT + 1;
             my_min_node = -1;
             my_min_connection = -1;
 #pragma omp barrier
 
 #pragma omp for
             for (i = 0; i < v; i++) {
-                if (!in_mst[i] && d[i] < my_min) {
+                if (!in_mst[i] && d[i] < my_min_weight) {
                     my_min_node = i;
                     my_min_weight = d[i];
                     my_min_connection = e[i];
