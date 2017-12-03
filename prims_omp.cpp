@@ -56,9 +56,12 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
                     continue;
                 }
 
-                min_node = i;
-                min_weight = d[i];
-                min_node_connection = e[i];
+#pragma omp critical
+                {
+                    min_node = i;
+                    min_weight = d[i];
+                    min_node_connection = e[i];
+                }
             }
 
             // TODO Fix generation so no disconnected components
@@ -119,10 +122,14 @@ int main(int argc, char *argv[]) {
 
     runtime = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 
-    cout << args.v << " vertices OpenMP on " << omp_get_num_procs() << " threads/CPUs runs in " << setiosflags(ios::fixed)
+    cout << args.v << " vertices OpenMP on " << omp_get_num_procs() << " threads/CPUs runs in "
+         << setiosflags(ios::fixed)
          << setprecision(3) << runtime << " seconds\n";
 
     if (args.print) {
+        cout << "Graph:" << endl;
+        Print2DMatrix(g, args.v);
+        cout << "MST:" << endl;
         Print2DMatrix(mst, args.v);
     }
 

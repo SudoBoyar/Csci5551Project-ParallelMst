@@ -111,6 +111,9 @@ int main(int argc, char *argv[]) {
          << runtime << " seconds\n";
 
     if (args.print) {
+        cout << "Graph:" << endl;
+        Print2DMatrix(g, args.v);
+        cout << "MST:" << endl;
         Print2DMatrix(mst, args.v);
     }
 
