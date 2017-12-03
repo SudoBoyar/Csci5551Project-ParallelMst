@@ -23,20 +23,20 @@ Arguments ParseArguments(int argc, char *argv[]) {
 
         if (argc >= 3) {
             args.seed = atoi(argv[2]) == 1;
-        } else {
-            args.seed = false;
 
             if (argc >= 4) {
                 args.print = atoi(argv[3]) == 1;
-            } else {
-                args.print = false;
 
                 if (argc >= 5) {
                     args.verbose = atoi(argv[4]) == 1;
                 } else {
                     args.verbose = false;
                 }
+            } else {
+                args.print = false;
             }
+        } else {
+            args.seed = false;
         }
     }
 
