@@ -5,27 +5,17 @@
 #include <iomanip>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-
-
-//#define VCOUNT 1000
+#include <sys/time.h>
 
 
 #include "InitializeGraph.h"
 #include "DotGen.h"
+#include "Arguments.h"
+#include "Print.h"
 
 
 using namespace std;
 
-void printMatrix(int **a, int n) {
-    for (int i = 0; i < n; i++) {
-        cout << "Row " << (i + 1) << ":\t";
-        for (int j = 0; j < n; j++) {
-            printf("%d\t", a[i][j]);
-        }
-        cout << endl;
-    }
-}
 
 void adjacency_matrix_prims(short **g, short **mst, const int v) {
     int mst_count = 1;
@@ -87,58 +77,42 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
     }
 }
 
-
-bool GetUserInput(int argc, char *argv[], int &v, bool &verbose) {
-    if (argc < 2) {
-        v = 100000;
-    } else {
-        v = atoi(argv[1]);
-        if (v <= 0) {
-            cout << "Graphs need vertices" << endl;
-            return false;
-        }
-
-        if (argc >= 3) {
-            verbose = true;
-        } else {
-            verbose = false;
-        }
-    }
-
-    return true;
-}
-
-
 int main(int argc, char *argv[]) {
-    int v;
-    bool verbose;
+    Arguments args;
 
-    if (!GetUserInput(argc, argv, v, verbose)) {
+    args = ParseArguments(argc, argv);
+    if (args.error) {
         exit(1);
     }
 
     // Instantiate g and mst
     short **g, **mst;
-    float start, end, runtime;
+    float runtime;
+    struct timeval start, end;
 
     // Initialize g and mst
     printf("Initializing Graph\n");
-    GraphGenParams graph = graphGenDense(v);
-    graph.initializeGraph(g, v);
+    GraphGenParams graph = graphGenDense(args.v, args.seed);
+    graph.initializeGraph(g, args.v);
 
     printf("Initializing MST\n");
-    GraphGenParams empty = noEdges(v);
-    empty.initializeGraph(mst, v);
+    GraphGenParams empty = noEdges(args.v, args.seed);
+    empty.initializeGraph(mst, args.v);
 
     // Run it
     printf("Running Prim's\n");
-    start = clock() / (float) CLOCKS_PER_SEC;
-    adjacency_matrix_prims(g, mst, v);
-    end = clock() / (float) CLOCKS_PER_SEC;
+    gettimeofday(&start, NULL);
+    adjacency_matrix_prims(g, mst, args.v);
+    gettimeofday(&end, NULL);
 
-    runtime = end - start;
+    runtime = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 
-    cout << "Sequential runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime << " seconds\n";
+    cout << "Sequential prim's on " << args.v << " vertices runs in " << setiosflags(ios::fixed) << setprecision(3)
+         << runtime << " seconds\n";
+
+    if (args.print) {
+        Print2DMatrix(mst, args.v);
+    }
 
 //    char *filename = new char[100];
 //    // Output input graph

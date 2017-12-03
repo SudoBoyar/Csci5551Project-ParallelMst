@@ -12,6 +12,7 @@ using namespace std;
 
 #define MAX_WEIGHT 500
 #define NO_EDGE MAX_WEIGHT+1
+#define SEED 1234
 
 //#include "Graph.h"
 
@@ -128,29 +129,39 @@ struct GraphGenParams {
 //    }
 };
 
-GraphGenParams noEdges(int v) {
+void seed() {
+    srand(SEED);
+}
+
+GraphGenParams noEdges(int v, bool useSeed) {
     GraphGenParams g = GraphGenParams();
     g.pEdgeAdd = 0;
+
+    if (useSeed) seed();
 
     return g;
 }
 
-GraphGenParams graphGenDense(int v) {
+GraphGenParams graphGenDense(int v, bool useSeed) {
     GraphGenParams g = GraphGenParams();
 
     // Connect to ~95%
     g.pEdgeAdd = ceil(0.95 * v);
     g.pEdgeIn = v;
 
+    if (useSeed) seed();
+
     return g;
 }
 
-GraphGenParams graphGenSparse(int v) {
+GraphGenParams graphGenSparse(int v, bool useSeed) {
     GraphGenParams g = GraphGenParams();
 
     // Connect to ~5%
     g.pEdgeAdd = ceil(0.1 * v);
     g.pEdgeIn = v;
+
+    if (useSeed) seed();
 
     return g;
 }
