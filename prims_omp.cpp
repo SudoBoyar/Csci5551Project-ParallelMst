@@ -85,9 +85,9 @@ void adjacency_matrix_prims(short **g, short **mst, const int v) {
                         continue;
                     }
 
-                    if (g[min_node][j] < d[j]) {
-                        d[j] = g[min_node][j];
-                        e[j] = min_node;
+                    if (g[min_node][i] < d[i]) {
+                        d[i] = g[min_node][i];
+                        e[i] = min_node;
                     }
                 }
             }
