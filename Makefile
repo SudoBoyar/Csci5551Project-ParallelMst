@@ -1,12 +1,16 @@
-all: sequential dots
+all: sequential omp mpi
+COMMON = DotGen.h Graph.h InitializeGraph.h Arguments.h Print.h
 
-sequential: DotGen.h Graph.h InitializeGraph.h prims_sequential.cpp
-	g++ -O3 -o sequential ./prims_sequential.cpp
+sequential: prims_sequential.cpp $(COMMON)
+	g++ -O -o sequential ./prims_sequential.cpp
 
-omp: prims_omp.cpp
+omp: prims_omp.cpp $(COMMON)
 	g++ -O -fopenmp -o omp ./prims_omp.cpp
 
-dots: results/*.dot
+mpi: prims_mpi.cpp $(COMMON)
+	mpiCC -O -o mpi ./prims_mpi.cpp
+
+dots:
 	dot -Tpng -O results/*.dot
 
 run:
