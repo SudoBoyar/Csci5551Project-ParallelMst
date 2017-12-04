@@ -69,6 +69,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             }
         }
 
+        cout << myProcessId << " Found " << min_node << "<-" << min_weight << "->" << min_node_connection << endl;
+
         // All reduce the min weight
         MPI_Allreduce(&min_weight, &g_min_weight, 1, MPI_WEIGHT_TYPE, MPI_MIN, MPI_COMM_WORLD);
 
@@ -86,6 +88,9 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
         MPI_Allreduce(&min_node, &g_min_node, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
+        if (myProcessId == 0) {
+            cout << "Min reduction " << g_min_node << "<-" << g_min_weight << "->" << g_min_connection << endl;
+        }
         in_mst[g_min_node] = true;
         if (myProcessId == 0) {
             mst[g_min_connection][g_min_node] = g[g_min_connection][g_min_node];
