@@ -33,11 +33,11 @@ struct GraphGenParams {
         return rand() % pEdgeIn < pEdgeAdd;
     }
 
-    short randWeight() {
+    weight_t randWeight() {
         return rand() % (2 * maxWeight) - maxWeight;
     }
 
-    void fillNoEdge(short **&g, int v) {
+    void fillNoEdge(weight_t **&g, int v) {
         for (int i = 0; i < v; i++) {
             for (int j = 0; j <= i; j++) {
                 g[i][j] = g[j][i] = NO_EDGE;
@@ -50,9 +50,9 @@ struct GraphGenParams {
      * @param g
      * @param v
      */
-    void initializeGraph(short **&g, int v) {
-        g = new short *[v];
-        g[0] = new short[(long) v * (long) v];
+    void initializeGraph(weight_t **&g, int v) {
+        g = new weight_t *[v];
+        g[0] = new weight_t[(long) v * (long) v];
         for (int i = 1; i < v; i++) {
             g[i] = g[i - 1] + v;
         }

@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
+typedef weight_t short;
 
 #include "InitializeGraph.h"
 #include "DotGen.h"
@@ -17,13 +18,13 @@
 using namespace std;
 
 
-void adjacency_matrix_prims(short **g, short **mst, const int v) {
+void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
     int mst_count = 1;
     bool *in_mst = new bool[v];
     in_mst[0] = true;
-    short *d = new short[v];
+    weight_t *d = new weight_t[v];
     int *e = new int[v];
-    short min_weight, my_min_weight;
+    weight_t min_weight, my_min_weight;
     int min_node, min_node_connection, my_min_node, my_min_connection;
     int i, c;
 
@@ -102,7 +103,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Instantiate g and mst
-    short **g, **mst;
+    weight_t **g, **mst;
     float runtime;
     struct timeval start, end;
 
