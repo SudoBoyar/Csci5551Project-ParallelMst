@@ -42,11 +42,14 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
     myG[0] = new weight_t[v*perProcess];
     for (i = 0; i < perProcess; i++) myG[i] = myG[i-1] + v;
 
+    for (i = 1; i < v; i++) {
+        in_mst[i] = false;
+    }
+
     MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
 
     // Initialize d and e
     for (i = 0; i < perProcess; i++) {
-        in_mst[i] = false;
         if (myG[i][0] != NO_EDGE) {
             d[i] = myG[i][0];
             e[i] = 0;
@@ -63,7 +66,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
         for (i = 0; i < perProcess; i++) {
             if (!in_mst[i + myStart] && d[i] < min_weight) {
-                min_node = i;
+                min_node = i + myStart;
                 min_weight = d[i];
                 min_node_connection = e[i];
             }
