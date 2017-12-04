@@ -8,7 +8,7 @@
 #include <sys/time.h>
 #include <mpi.h>
 
-typedef weight_t short;
+typedef short weight_t;
 #define MPI_WEIGHT_TYPE MPI_SHORT
 
 #include "InitializeGraph.h"
@@ -28,25 +28,20 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
         myEnd = v;
     }
 
-    weight_t min_weight;
-    int min_node, min_node_connection;
-    int mst_count = 1;
     bool *in_mst = new bool[v];
     in_mst[0] = true;
     weight_t *d = new weight_t[perProcess];
     int *e = new int[perProcess];
-    weight_t min_weight;
-    weight_t g_min_weight;
-    int min_node, min_node_connection;
-    int g_min_node, g_min_connection;
+
+    weight_t min_weight, g_min_weight;
+    int min_node, g_min_node, min_node_connection, g_min_connection;
     int i, c;
-    int source;
 
     // Instantiate local section of g
     weight_t **myG = new weight_t *[v * perProcess];
     for (i = 0; i < perProcess; i++) myG[i] = myG[i-1] + v;
 
-    MPI_Scatter(g[0], n * perProcess, MPI_WEIGHT_TYPE, myG[0], n * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
+    MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
 
     // Initialize d and e
     for (i = 0; i < perProcess; i++) {
@@ -121,9 +116,10 @@ int main(int argc, char *argv[]) {
 
     // Instantiate g and mst
     weight_t **g, **mst;
+    float runtime;
     struct timeval start, end;
 
-    if (myProcessID == 0) {
+    if (myProcessId == 0) {
         // Initialize g and mst
         printf("Initializing Graph\n");
         GraphGenParams graph = graphGenDense(args.v, args.seed);
@@ -140,7 +136,7 @@ int main(int argc, char *argv[]) {
 
     adjacency_matrix_prims(g, mst, args.v, numProcesses, myProcessId);
 
-    if (myProcessID == 0) {
+    if (myProcessId == 0) {
         gettimeofday(&end, NULL);
 
         runtime = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;

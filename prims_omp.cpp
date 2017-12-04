@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-typedef weight_t short;
+typedef short weight_t;
 
 #include "InitializeGraph.h"
 #include "DotGen.h"
