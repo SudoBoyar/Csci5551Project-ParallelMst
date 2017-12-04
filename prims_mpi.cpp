@@ -38,16 +38,25 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
     int i, c;
 
     // Instantiate local section of g
-    weight_t **myG = new weight_t *[v];
+    weight_t **myG = new weight_t *[perProcess];
     myG[0] = new weight_t[v * perProcess];
-    for (i = 1; i < perProcess; i++) myG[i] = myG[i - 1] + v;
+    for (i = 1; i < perProcess; i++) {
+        myG[i] = myG[i - 1] + v;
+    }
+    if (myProcessId == 1) {
+        cout << myProcessId << " ";
+        for (i = 0; i < perProcess; i++) {
+            cout << myG[i] << " ";
+        }
+        cout << endl << flush;
+    }
 
     for (i = 1; i < v; i++) {
         in_mst[i] = false;
     }
 
     MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
-    cout << myProcessId << " Completed Scatter " << endl;
+    cout << myProcessId << " Completed Scatter " << endl << flush;
     // Initialize d and e
     for (i = 0; i < perProcess; i++) {
         if (myG[i][0] != NO_EDGE) {
@@ -58,7 +67,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             e[i] = -1;
         }
     }
-    cout << myProcessId << " Completed d/e initialization" << endl;
+    cout << myProcessId << " Completed d/e initialization" << endl << flush;
     for (c = 1; c < v; c++) {
         min_node = v + 1;
         min_node_connection = v + 1;
@@ -72,7 +81,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             }
         }
 
-        cout << myProcessId << " Found " << min_node << "<-" << min_weight << "->" << min_node_connection << endl;
+        cout << myProcessId << " Found " << min_node << "<-" << min_weight << "->" << min_node_connection << endl << flush;
 
         // All reduce the min weight
         MPI_Allreduce(&min_weight, &g_min_weight, 1, MPI_WEIGHT_TYPE, MPI_MIN, MPI_COMM_WORLD);
@@ -91,9 +100,9 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
         MPI_Allreduce(&min_node, &g_min_node, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
-        if (myProcessId == 0) {
-            cout << "Min reduction " << g_min_node << "<-" << g_min_weight << "->" << g_min_connection << endl;
-        }
+        cout << myProcessId << " Min reduction " << g_min_node << "<-" << g_min_weight << "->" << g_min_connection
+             << endl << flush;
+
         in_mst[g_min_node] = true;
         if (myProcessId == 0) {
             mst[g_min_connection][g_min_node] = g[g_min_connection][g_min_node];
@@ -154,9 +163,9 @@ int main(int argc, char *argv[]) {
              << runtime << " seconds\n";
 
         if (args.print) {
-            cout << "Graph:" << endl;
+            cout << "Graph:" << endl << flush;
             Print2DMatrix(g, args.v);
-            cout << "MST:" << endl;
+            cout << "MST:" << endl << flush;
             Print2DMatrix(mst, args.v);
         }
 //    char *filename = new char[100];
