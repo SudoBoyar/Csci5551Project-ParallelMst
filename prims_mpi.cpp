@@ -47,7 +47,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
     }
 
     MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
-
+    cout << myProcessId << " Completed Scatter " << endl;
     // Initialize d and e
     for (i = 0; i < perProcess; i++) {
         if (myG[i][0] != NO_EDGE) {
@@ -58,7 +58,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             e[i] = -1;
         }
     }
-
+    cout << myProcessId << " Completed d/e initialization" << endl;
     for (c = 1; c < v; c++) {
         min_node = v + 1;
         min_node_connection = v + 1;
