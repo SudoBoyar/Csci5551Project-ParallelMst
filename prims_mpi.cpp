@@ -172,4 +172,6 @@ int main(int argc, char *argv[]) {
 //    snprintf(filename, 100, "results/sequential_sparse_%d_mst_overlay.dot", v);
 //    matrixMstOutput(g, mst, v, filename);
     }
+
+    MPI_Finalize();
 }
