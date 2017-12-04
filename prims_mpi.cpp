@@ -21,8 +21,7 @@ using namespace std;
 
 
 void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numProcesses, int myProcessId) {
-    int rowsPerProcess = v / numProcesses;
-    int elementsPerProcess = rowsPerProcess * v;
+    int perProcess = v / numProcesses;
     int myStart = myProcessId * perProcess;
     int myEnd = (myProcessId + 1) * perProcess;
     if (myEnd > v) {
@@ -31,8 +30,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
     bool *in_mst = new bool[v];
     in_mst[0] = true;
-    weight_t *d = new weight_t[rowsPerProcess];
-    int *e = new int[rowsPerProcess];
+    weight_t *d = new weight_t[perProcess];
+    int *e = new int[perProcess];
 
     weight_t min_weight, g_min_weight;
     int min_node, g_min_node, min_node_connection, g_min_connection;
