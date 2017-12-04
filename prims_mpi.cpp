@@ -38,7 +38,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
     int i, c;
 
     // Instantiate local section of g
-    weight_t **myG = new weight_t *[v * perProcess];
+    weight_t **myG = new weight_t *[v];
+    myG[0] = new weight_t[v*perProcess];
     for (i = 0; i < perProcess; i++) myG[i] = myG[i-1] + v;
 
     MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
