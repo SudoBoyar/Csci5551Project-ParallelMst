@@ -18,13 +18,13 @@ typedef short weight_t;
 using namespace std;
 
 
-void adjacency_matrix_prims(short **g, short **mst, const int v) {
+void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
     int mst_count = 1;
     bool *in_mst = new bool[v];
     in_mst[0] = true;
-    short *d = new short[v];
+    weight_t *d = new weight_t[v];
     int *e = new int[v];
-    short min_weight;
+    weight_t min_weight;
     int min_node, min_node_connection;
     int i, c;
 
@@ -73,12 +73,9 @@ int main(int argc, char *argv[]) {
     if (args.error) {
         exit(1);
     }
-//    cout << "short " << sizeof(short) << " int " << sizeof(int) << " float " << sizeof(float) << endl;
-//    cout << "short* " << sizeof(short*) << " int* " << sizeof(int*) << " float* " << sizeof(float*) << endl;
-//    exit(0);
 
     // Instantiate g and mst
-    short **g, **mst;
+    weight_t **g, **mst;
     float runtime;
     struct timeval start, end;
 
