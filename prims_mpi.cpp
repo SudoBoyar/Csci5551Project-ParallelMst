@@ -50,8 +50,6 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
     MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
 
-    delete [] tmp;
-
     // Initialize d and e
     for (i = 0; i < perProcess; i++) {
         if (myG[i][0] != NO_EDGE) {
