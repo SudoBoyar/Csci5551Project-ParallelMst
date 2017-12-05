@@ -47,7 +47,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
     for (int i = 1; i < v; i++) {
         myG[i] = myG[i - 1] + perProcess;
     }
-    weight_t **tmp = new weight_t *[v];
+    weight_t **tmp = new weight_t *[perProcess];
     tmp[0] = new weight_t[v * perProcess];
     for (int i = 1; i < perProcess; i++) {
         tmp[i] = tmp[i - 1] + v;
