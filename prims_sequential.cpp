@@ -54,8 +54,10 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
         }
 
         in_mst[min_node] = true;
-        mst[min_node_connection][min_node] = g[min_node_connection][min_node];
-        mst[min_node][min_node_connection] = g[min_node_connection][min_node];
+        if (min_node < min_node_connection)
+            mst[min_node][min_node_connection] = g[min_node][min_node_connection];
+        else
+            mst[min_node_connection][min_node] = g[min_node_connection][min_node];
 
         for (i = 0; i < v; i++) {
             if (!in_mst[i] && g[min_node][i] < d[i]) {

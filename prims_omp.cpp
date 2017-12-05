@@ -78,8 +78,10 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
 #pragma omp single
             {
                 in_mst[min_node] = true;
-                mst[min_node_connection][min_node] = g[min_node_connection][min_node];
-                mst[min_node][min_node_connection] = g[min_node_connection][min_node];
+                if (min_node < min_node_connection)
+                    mst[min_node][min_node_connection] = g[min_node][min_node_connection];
+                else
+                    mst[min_node_connection][min_node] = g[min_node_connection][min_node];
             };
 #pragma omp barrier
 

@@ -57,7 +57,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             e[i] = 0;
         } else {
             d[i] = NO_EDGE;
-            e[i] = v+1;
+            e[i] = v + 1;
         }
     }
 
@@ -93,8 +93,10 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
         in_mst[g_min_node] = true;
         if (myProcessId == 0) {
-            mst[g_min_connection][g_min_node] = g[g_min_connection][g_min_node];
-            mst[g_min_node][g_min_connection] = g[g_min_connection][g_min_node];
+            if (min_node < min_node_connection)
+                mst[min_node][min_node_connection] = g[min_node][min_node_connection];
+            else
+                mst[min_node_connection][min_node] = g[min_node_connection][min_node];
         }
 
         for (i = 0; i < perProcess; i++) {
@@ -139,7 +141,7 @@ int main(int argc, char *argv[]) {
         printf("Running Prim's\n");
         gettimeofday(&start, NULL);
     } else {
-        g = new weight_t*[1];
+        g = new weight_t *[1];
     }
 
     adjacency_matrix_prims(g, mst, args.v, numProcesses, myProcessId);
