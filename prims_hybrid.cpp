@@ -51,7 +51,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
     MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
 
-#pragma omp parallel shared(d, e, g, myG mst, in_mst, min_weight, min_node, min_node_connection, g_min_node, g_min_connection, g_min_weight) private(i, c, my_min_weight, my_min_node, my_min_connection)
+#pragma omp parallel shared(d, e, g, myG, mst, in_mst, min_weight, min_node, min_node_connection, g_min_node, g_min_connection, g_min_weight) private(i, c, my_min_weight, my_min_node, my_min_connection)
     {
         // Initialize d and e
 #pragma omp for schedule(static)
