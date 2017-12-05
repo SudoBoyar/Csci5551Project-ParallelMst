@@ -11,7 +11,7 @@ mpi: prims_mpi.cpp $(COMMON)
 	mpiCC -O -o mpi ./prims_mpi.cpp
 
 hybrid: prims_hybrid.cpp
-	mpiCC -O -fopenmp hybrid ./prims_hybrid.cpp
+	mpiCC -O -fopenmp -o hybrid ./prims_hybrid.cpp
 
 dots:
 	dot -Tpng -O results/*.dot
