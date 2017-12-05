@@ -37,14 +37,14 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
     int min_node, g_min_node, min_node_connection, g_min_connection;
     int i, c;
 
-    for (int i = 1; i < v; i++) {
+    for (i = 1; i < v; i++) {
         in_mst[i] = false;
     }
 
     // Instantiate local section of g
     weight_t **myG = new weight_t *[perProcess];
     myG[0] = new weight_t[v * perProcess];
-    for (int i = 1; i < perProcess; i++) {
+    for (i = 1; i < perProcess; i++) {
         myG[i] = myG[i - 1] + v;
     }
 
@@ -93,10 +93,10 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
         in_mst[g_min_node] = true;
         if (myProcessId == 0) {
-            if (min_node < min_node_connection)
-                mst[min_node][min_node_connection] = g[min_node][min_node_connection];
+            if (g_min_node < g_min_connection)
+                mst[g_min_node][g_min_connection] = g[g_min_node][g_min_connection];
             else
-                mst[min_node_connection][min_node] = g[min_node_connection][min_node];
+                mst[g_min_connection][g_min_node] = g[g_min_connection][g_min_node];
         }
 
         for (i = 0; i < perProcess; i++) {
