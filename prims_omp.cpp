@@ -24,11 +24,11 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
     in_mst[0] = true;
     weight_t *d = new weight_t[v];
     int *e = new int[v];
-    weight_t min_weight, my_min_weight, tmp;
+    weight_t min_weight, my_min_weight;
     int min_node, min_node_connection, my_min_node, my_min_connection;
     int i, c;
 
-#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, c, my_min_weight, my_min_node, my_min_connection, tmp)
+#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, c, my_min_weight, my_min_node, my_min_connection)
     {
         // Initialize d and e
 #pragma omp for schedule(static)
@@ -42,7 +42,6 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
                 e[i] = -1;
             }
         }
-
 
         for (c = 1; c < v; c++) {
 #pragma omp single
@@ -65,6 +64,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
                     my_min_connection = e[i];
                 }
             }
+
 #pragma omp critical
             {
                 if (my_min_weight < min_weight) {
@@ -78,10 +78,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
 #pragma omp single
             {
                 in_mst[min_node] = true;
-                if (min_node < min_node_connection)
-                    mst[min_node][min_node_connection] = g[min_node][min_node_connection];
-                else
-                    mst[min_node_connection][min_node] = g[min_node_connection][min_node];
+                mst[min_node][min_node_connection] = g[min_node][min_node_connection];
+                mst[min_node_connection][min_node] = g[min_node][min_node_connection];
             };
 
 #pragma omp for
@@ -91,6 +89,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
                     e[i] = min_node;
                 }
             }
+#pragma omp barrier
         }
     };
 }

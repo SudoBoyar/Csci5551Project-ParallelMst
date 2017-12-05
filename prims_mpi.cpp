@@ -93,10 +93,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
         in_mst[g_min_node] = true;
         if (myProcessId == 0) {
-            if (g_min_node < g_min_connection)
-                mst[g_min_node][g_min_connection] = g[g_min_node][g_min_connection];
-            else
-                mst[g_min_connection][g_min_node] = g[g_min_connection][g_min_node];
+            mst[g_min_node][g_min_connection] = g[g_min_node][g_min_connection];
+            mst[g_min_connection][g_min_node] = g[g_min_node][g_min_connection];
         }
 
         for (i = 0; i < perProcess; i++) {
