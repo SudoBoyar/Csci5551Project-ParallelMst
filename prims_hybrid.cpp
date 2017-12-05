@@ -88,7 +88,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             }
 #pragma omp barrier
 
-#pragma omp criitical
+#pragma omp critical
             {
                 if (my_min_weight < min_weight) {
                     min_node = my_min_node;
@@ -96,7 +96,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
                     min_node_connection = my_min_connection;
                 }
             };
-#omp single
+#pragma omp single
             {
                 // All reduce the min weight
                 MPI_Allreduce(&min_weight, &g_min_weight, 1, MPI_WEIGHT_TYPE, MPI_MIN, MPI_COMM_WORLD);
