@@ -35,25 +35,38 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
     weight_t min_weight, g_min_weight;
     int min_node, g_min_node, min_node_connection, g_min_connection;
-    int i, c;
+    int i, j, c;
 
     for (int i = 1; i < v; i++) {
         in_mst[i] = false;
     }
 
     // Instantiate local section of g
-    weight_t **myG = new weight_t *[perProcess];
+    weight_t **myG = new weight_t *[v];
     myG[0] = new weight_t[v * perProcess];
+    for (int i = 1; i < v; i++) {
+        myG[i] = myG[i - 1] + perProcess;
+    }
+    weight_t **tmp = new weight_t *[v];
+    tmp[0] = new weight_t[v * perProcess];
     for (int i = 1; i < perProcess; i++) {
-        myG[i] = myG[i - 1] + v;
+        tmp[i] = tmp[i - 1] + v;
     }
 
-    MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
+    MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, tmp[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
+
+    for (i = 0; i < perProcess; i++) {
+        for (j = 0; j < v; j++) {
+            myG[j][i] = tmp[i][j];
+        }
+    }
+
+    delete [] tmp;
 
     // Initialize d and e
     for (i = 0; i < perProcess; i++) {
-        if (myG[i][0] != NO_EDGE) {
-            d[i] = myG[i][0];
+        if (myG[0][i] != NO_EDGE) {
+            d[i] = myG[0][i];
             e[i] = 0;
         } else {
             d[i] = NO_EDGE;
@@ -100,8 +113,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
         }
 
         for (i = 0; i < perProcess; i++) {
-            if (!in_mst[i + myStart] && myG[i][g_min_node] < d[i]) {
-                d[i] = myG[i][g_min_node];
+            if (!in_mst[i + myStart] && myG[g_min_node][i] < d[i]) {
+                d[i] = myG[g_min_node][i];
                 e[i] = g_min_node;
             }
         }
