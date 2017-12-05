@@ -24,11 +24,11 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
     in_mst[0] = true;
     weight_t *d = new weight_t[v];
     int *e = new int[v];
-    weight_t min_weight, my_min_weight;
+    weight_t min_weight, my_min_weight, tmp;
     int min_node, min_node_connection, my_min_node, my_min_connection;
     int i, c;
 
-#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, c, my_min_weight, my_min_node, my_min_connection)
+#pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, c, my_min_weight, my_min_node, my_min_connection, tmp)
     {
         // Initialize d and e
 #pragma omp for schedule(static)
@@ -51,13 +51,13 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
                 min_node_connection = -1;
                 min_weight = MAX_WEIGHT + 1;
             };
+#pragma omp barrier
 
             my_min_weight = MAX_WEIGHT + 1;
             my_min_node = -1;
             my_min_connection = -1;
-#pragma omp barrier
 
-#pragma omp for
+#pragma omp for schedule(static)
             for (i = 0; i < v; i++) {
                 if (!in_mst[i] && d[i] < my_min_weight) {
                     my_min_node = i;
@@ -83,7 +83,6 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
                 else
                     mst[min_node_connection][min_node] = g[min_node_connection][min_node];
             };
-#pragma omp barrier
 
 #pragma omp for
             for (i = 0; i < v; i++) {

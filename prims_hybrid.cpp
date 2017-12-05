@@ -78,7 +78,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             my_min_connection = v + 1;
             my_min_weight = MAX_WEIGHT + 1;
 
-#pragma omp for
+#pragma omp for schedule(static)
             for (i = 0; i < perProcess; i++) {
                 if (!in_mst[i + myStart] && d[i] < my_min_weight) {
                     my_min_node = i + myStart;
@@ -86,7 +86,6 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
                     my_min_connection = e[i];
                 }
             }
-#pragma omp barrier
 
 #pragma omp critical
             {
@@ -96,6 +95,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
                     min_node_connection = my_min_connection;
                 }
             };
+#pragma omp barrier
+
 #pragma omp single
             {
                 // All reduce the min weight
@@ -128,7 +129,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
                 }
             };
 
-#pragma omp for schedule(static)
+#pragma omp for
             for (i = 0; i < perProcess; i++) {
                 if (!in_mst[i + myStart] && myG[i][g_min_node] < d[i]) {
                     d[i] = myG[i][g_min_node];
