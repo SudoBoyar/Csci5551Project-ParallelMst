@@ -17,6 +17,20 @@ typedef short weight_t;
 
 using namespace std;
 
+struct Edge {
+    weight_t d;
+    int v1, v2;
+
+    Edge(int src, int dest, weight_t w) {
+        v1 = src;
+        v2 = dest;
+        d = w;
+    }
+
+    bool operator<(const Edge &e1, const Edge &e2) {
+        return e1.d < e2.d;
+    }
+};
 
 void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
     int mst_count = 1;
@@ -27,6 +41,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
     weight_t min_weight, my_min_weight;
     int min_node, min_node_connection, my_min_node, my_min_connection;
     int i, c;
+    Edge minEdge;
 
 #pragma omp parallel shared(d, e, g, mst, in_mst, min_weight, min_node, min_node_connection) private(i, c, my_min_weight, my_min_node, my_min_connection)
     {
@@ -49,6 +64,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
                 min_node = -1;
                 min_node_connection = -1;
                 min_weight = MAX_WEIGHT + 1;
+                minEdge = Edge(min_node, min_node_connection, min_weight);
             };
 #pragma omp barrier
 
@@ -56,28 +72,36 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
             my_min_node = -1;
             my_min_connection = -1;
 
-#pragma omp for schedule(static)
+#pragma omp for schedule(static) reduction(min:minEdge)
             for (i = 0; i < v; i++) {
-                if (!in_mst[i] && d[i] < my_min_weight) {
-                    my_min_node = i;
-                    my_min_weight = d[i];
-                    my_min_connection = e[i];
-                }
+                minEdge = min(minEdge, Edge(i, e[i], d[i]));
             }
 
-#pragma omp critical
-            {
-                if (my_min_weight < min_weight) {
-                    min_node = my_min_node;
-                    min_weight = my_min_weight;
-                    min_node_connection = my_min_connection;
-                }
-            };
+//#pragma omp for schedule(static)
+//            for (i = 0; i < v; i++) {
+//                if (!in_mst[i] && d[i] < my_min_weight) {
+//                    my_min_node = i;
+//                    my_min_weight = d[i];
+//                    my_min_connection = e[i];
+//                }
+//            }
+//
+//#pragma omp critical
+//            {
+//                if (my_min_weight < min_weight) {
+//                    min_node = my_min_node;
+//                    min_weight = my_min_weight;
+//                    min_node_connection = my_min_connection;
+//                }
+//            };
 #pragma omp barrier
-
+            min_node = minEdge.v1;
+            min_node_connection = minEdge.v2;
+            min_weight = minEdge.d;
 #pragma omp single
             {
                 in_mst[min_node] = true;
+                d[min_node] = MAX_WEIGHT + 1;
                 mst[min_node][min_node_connection] = g[min_node][min_node_connection];
                 mst[min_node_connection][min_node] = g[min_node][min_node_connection];
             };
