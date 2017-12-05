@@ -72,7 +72,6 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
                 min_node_connection = v + 1;
                 min_weight = MAX_WEIGHT + 1;
             };
-#pragma omp barrier
 
             my_min_node = v + 1;
             my_min_connection = v + 1;
@@ -182,8 +181,9 @@ int main(int argc, char *argv[]) {
 
         runtime = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 
-        cout << "MPI prim's on " << args.v << " vertices runs in " << setiosflags(ios::fixed) << setprecision(3)
-             << runtime << " seconds\n";
+        cout << "Hybrid prim's on " << args.v << " vertices on " << numProcesses << " nodes each with "
+             << omp_get_num_procs() << " threads/CPUs runs in " << setiosflags(ios::fixed) << setprecision(3) << runtime
+             << " seconds\n";
 
         if (args.print) {
             cout << "Graph:" << endl << flush;
