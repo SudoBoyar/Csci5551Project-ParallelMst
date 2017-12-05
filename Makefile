@@ -1,4 +1,4 @@
-all: sequential omp mpi
+all: sequential omp mpi hybrid
 COMMON = DotGen.h Graph.h InitializeGraph.h Arguments.h Print.h
 
 sequential: prims_sequential.cpp $(COMMON)
@@ -9,6 +9,9 @@ omp: prims_omp.cpp $(COMMON)
 
 mpi: prims_mpi.cpp $(COMMON)
 	mpiCC -O -o mpi ./prims_mpi.cpp
+
+hybrid: prims_hybrid.cpp
+	mpiCC -O -fopenmp hybrid ./prims_hybrid.cpp
 
 dots:
 	dot -Tpng -O results/*.dot
