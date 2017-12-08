@@ -14,8 +14,6 @@ using namespace std;
 #define NO_EDGE MAX_WEIGHT+1
 #define SEED 1234
 
-//#include "Graph.h"
-
 
 /********************
  * Default settings *
@@ -71,62 +69,7 @@ struct GraphGenParams {
                 }
             }
         }
-
-        // Make sure there's at least one edge on each vertex
-//        bool hasEdge = false;
-//        int newEdge = 0;
-//        for (int i = 0; i < v; i++) {
-//            hasEdge = false;
-//            for (int j = 0; j < v; j++) {
-//                if (i != j && g[i][j] != NO_EDGE) {
-//                    hasEdge = true;
-//                    break;
-//                }
-//            }
-//
-//            if (!hasEdge) {
-//                // None found, add one to a random other vertex
-//                newEdge = rand() % v;
-//                while (newEdge == i) {
-//                    newEdge = rand() % v;
-//                }
-//                g[i][newEdge] = g[newEdge][i] = randWeight();
-//            }
-//        }
     }
-
-//    void initializeGraph(Graph g) {
-//        for (int i = 0; i < g.length(); i++) {
-//            for (int j = 0; j < i; j++) {
-//                if (includeNext()) {
-//                    g.addEdge(i, j, randWeight());
-//                }
-//            }
-//        }
-//
-//        // Make sure there's at least one edge on each vertex
-//        bool hasEdge = false;
-//        int newEdge = 0;
-//        for (int i = 0; i < g.length(); i++) {
-//            hasEdge = false;
-//            for (int j = 0; j < g.length(); j++) {
-//                if (g.weight(i, j) != NO_EDGE) {
-//                    hasEdge = true;
-//                    break;
-//                }
-//            }
-//
-//            if (!hasEdge) {
-//                // None found, add one to a random other vertex
-//                newEdge = rand() % g.length();
-//                while (newEdge == i) {
-//                    newEdge = rand() % g.length();
-//                }
-//
-//                g.addEdge(i, newEdge, randWeight());
-//            }
-//        }
-//    }
 };
 
 void seed() {
@@ -147,18 +90,6 @@ GraphGenParams graphGenDense(int v, bool useSeed) {
 
     // Connect to ~95%
     g.pEdgeAdd = ceil(0.95 * v);
-    g.pEdgeIn = v;
-
-    if (useSeed) seed();
-
-    return g;
-}
-
-GraphGenParams graphGenSparse(int v, bool useSeed) {
-    GraphGenParams g = GraphGenParams();
-
-    // Connect to ~5%
-    g.pEdgeAdd = ceil(0.1 * v);
     g.pEdgeIn = v;
 
     if (useSeed) seed();
