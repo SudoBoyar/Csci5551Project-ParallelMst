@@ -91,9 +91,9 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
             if (my_min_weight < min_weights[myLockId]) {
                 omp_set_lock(&locks[myLockId]);
                 if (my_min_weight < min_weights[myLockId]) {
-                    min_node = my_min_node;
-                    min_weight = my_min_weight;
-                    min_node_connection = my_min_connection;
+                    min_nodes[myLockId] = my_min_node;
+                    min_weights[myLockId] = my_min_weight;
+                    min_connections[myLockId] = my_min_connection;
                 }
                 omp_unset_lock(&locks[myLockId]);
             }
