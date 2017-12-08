@@ -37,6 +37,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
     weight_t min_weight, g_min_weight, my_min_weight;
     int min_node, g_min_node, min_node_connection, g_min_connection, my_min_node, my_min_connection;
     int i, c;
+
+    int myId, myLockId;
     weight_t *min_weights;
     int *min_connections, *min_nodes;
 
@@ -63,8 +65,11 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
     MPI_Scatter(g[0], v * perProcess, MPI_WEIGHT_TYPE, myG[0], v * perProcess, MPI_WEIGHT_TYPE, 0, MPI_COMM_WORLD);
 
-#pragma omp parallel shared(d, e, g, myG, mst, in_mst, min_weight, min_node, min_node_connection, g_min_node, g_min_connection, g_min_weight) private(i, c, my_min_weight, my_min_node, my_min_connection)
+#pragma omp parallel shared(d, e, g, myG, mst, in_mst, min_weight, min_node, min_node_connection, g_min_node, g_min_connection, g_min_weight, min_nodes, min_weights, min_connections, lg) private(i, c, my_min_weight, my_min_node, my_min_connection, myId, myLockId)
     {
+        myId = omp_get_thread_num();
+        myLockId = (int) floor(log2f((float) myId));
+
         // Initialize d and e
 #pragma omp for schedule(static)
         for (i = 0; i < perProcess; i++) {
