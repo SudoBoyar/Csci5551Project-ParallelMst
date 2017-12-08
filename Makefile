@@ -1,5 +1,5 @@
 all: sequential omp mpi hybrid
-COMMON = DotGen.h Graph.h InitializeGraph.h Arguments.h Print.h
+COMMON = DotGen.h InitializeGraph.h Arguments.h Print.h
 
 sequential: prims_sequential.cpp $(COMMON)
 	g++ -O -o sequential ./prims_sequential.cpp
