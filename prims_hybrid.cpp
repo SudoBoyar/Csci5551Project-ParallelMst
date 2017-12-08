@@ -38,6 +38,16 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
     int min_node, g_min_node, min_node_connection, g_min_connection, my_min_node, my_min_connection;
     int i, c;
 
+    int lg = (int) floor(log2f((float) omp_get_num_procs()));
+    omp_lock_t *locks = new omp_lock_t[lg];
+    min_connections = new int[lg];
+    min_nodes = new int[lg];
+    min_weights = new weight_t[lg];
+
+    for (i = 0; i < lg; i++) {
+        omp_init_lock(&locks[i]);
+    }
+
     for (int i = 1; i < v; i++) {
         in_mst[i] = false;
     }
@@ -68,10 +78,17 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
         for (c = 1; c < v; c++) {
 #pragma omp single
             {
-                min_node = v + 1;
-                min_node_connection = v + 1;
+                min_node = -1;
+                min_node_connection = -1;
                 min_weight = MAX_WEIGHT + 1;
             };
+#pragma omp for
+            for (i = 0; i < lg; i++) {
+                min_nodes[i] = -1;
+                min_connections[i] = -1;
+                min_weights[i] = MAX_WEIGHT + 1;
+            }
+#pragma omp barrier
 
             my_min_node = v + 1;
             my_min_connection = v + 1;
@@ -86,18 +103,27 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
                 }
             }
 
-#pragma omp critical
-            {
-                if (my_min_weight < min_weight) {
-                    min_node = my_min_node;
-                    min_weight = my_min_weight;
-                    min_node_connection = my_min_connection;
+            if (my_min_weight < min_weights[myLockId]) {
+                omp_set_lock(&locks[myLockId]);
+                if (my_min_weight < min_weights[myLockId]) {
+                    min_nodes[myLockId] = my_min_node;
+                    min_weights[myLockId] = my_min_weight;
+                    min_connections[myLockId] = my_min_connection;
                 }
-            };
+                omp_unset_lock(&locks[myLockId]);
+            }
 #pragma omp barrier
 
 #pragma omp single
             {
+                for (i = 0; i < lg; i++) {
+                    if (min_weights[i] < min_weight) {
+                        min_weight = min_weights[i];
+                        min_node = min_nodes[i];
+                        min_node_connection = min_connections[i];
+                    }
+                }
+
                 // All reduce the min weight
                 MPI_Allreduce(&min_weight, &g_min_weight, 1, MPI_WEIGHT_TYPE, MPI_MIN, MPI_COMM_WORLD);
 
