@@ -32,10 +32,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
     weight_t *min_weights;
     int *min_connections, *min_nodes;
 
-    int lg = (int) ceil(log2f((float) omp_get_num_procs()));
-    if ((int) floor(log2f((float) omp_get_num_procs())) == lg) {
-        lg += 1;
-    }
+    int lg = (int) floor(log2f((float) omp_get_num_procs())) + 1;
     omp_lock_t *locks = new omp_lock_t[lg];
     min_connections = new int[lg];
     min_nodes = new int[lg];
