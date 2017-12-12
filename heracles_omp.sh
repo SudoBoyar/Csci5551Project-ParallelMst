@@ -7,18 +7,18 @@
 #SBATCH --output=omp_results.out
 
 
-#srun ~/csc5551/project/omp 48 1
-#srun ~/csc5551/project/omp 240 1
-#srun ~/csc5551/project/omp 480 1
-#srun ~/csc5551/project/omp 2400 1
-#srun ~/csc5551/project/omp 4800 1
-#srun ~/csc5551/project/omp 24000 1
-#srun ~/csc5551/project/omp 48000 1
+#srun omp 48 1
+#srun omp 240 1
+#srun omp 480 1
+#srun omp 2400 1
+#srun omp 4800 1
+#srun omp 24000 1
+#srun omp 48000 1
 
-srun ~/csc5551/project/omp 192 1
-srun ~/csc5551/project/omp 960 1
-srun ~/csc5551/project/omp 1920 1
-srun ~/csc5551/project/omp 9600 1
-srun ~/csc5551/project/omp 19200 1
-srun ~/csc5551/project/omp 57600 1
+srun omp 192 1
+srun omp 960 1
+srun omp 1920 1
+srun omp 9600 1
+srun omp 19200 1
+srun omp 57600 1
 
