@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
 
         runtime = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 
-        cout << "MPI prim's on " << args.v << " vertices runs in " << setiosflags(ios::fixed) << setprecision(3)
+        cout << "MPI prim's on " << args.v << " vertices on " << numProcesses << " nodes runs in " << setiosflags(ios::fixed) << setprecision(3)
              << runtime << " seconds\n";
 
         if (args.print) {
