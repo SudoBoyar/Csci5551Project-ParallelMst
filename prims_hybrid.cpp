@@ -102,6 +102,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             my_min_connection = v + 1;
             my_min_weight = MAX_WEIGHT + 1;
 
+            // Find OpenMP local minimum
 #pragma omp for schedule(static)
             for (i = 0; i < perProcess; i++) {
                 if (!in_mst[i + myStart] && d[i] < my_min_weight) {
@@ -121,6 +122,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 //                omp_unset_lock(&locks[myLockId]);
 //            }
 
+            // Find MPI process local minimum
 #pragma omp critical
             {
                 if (my_min_weight < min_weight) {
@@ -131,6 +133,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             };
 #pragma omp barrier
 
+            // MPI Reductions to find global minimum
 #pragma omp single
             {
 //                for (i = 0; i < lg; i++) {
@@ -160,6 +163,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
             };
 #pragma omp barrier
 
+            // Update in_mst marker and add edge to MST
 #pragma omp single
             {
                 in_mst[g_min_node] = true;
@@ -169,6 +173,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
                 }
             };
 
+            // Update candidate edges
 #pragma omp for
             for (i = 0; i < perProcess; i++) {
                 if (!in_mst[i + myStart] && myG[i][g_min_node] < d[i]) {

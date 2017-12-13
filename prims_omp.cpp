@@ -78,6 +78,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
             my_min_node = -1;
             my_min_connection = -1;
 
+            // Find my minimum
 #pragma omp for schedule(static)
             for (i = 0; i < v; i++) {
                 if (!in_mst[i] && d[i] < my_min_weight) {
@@ -87,7 +88,8 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
                 }
             }
 
-
+            // Use myLockId to update minimum weight if applicable
+            // Multiple locations behind locks allow parallel reduction to a limited set, which can be done more quickly afterwords
             if (my_min_weight < min_weights[myLockId]) {
                 omp_set_lock(&locks[myLockId]);
                 if (my_min_weight < min_weights[myLockId]) {
@@ -99,6 +101,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
             }
 #pragma omp barrier
 
+            // Find minimum and update in_mst marker and add edge to MST
 #pragma omp single
             {
                 for (i = 0; i < lg; i++) {
@@ -114,6 +117,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
             };
 #pragma omp barrier
 
+            // Update candidate edges
 #pragma omp for
             for (i = 0; i < v; i++) {
                 if (!in_mst[i] && g[min_node][i] < d[i]) {

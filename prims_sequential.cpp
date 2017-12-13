@@ -40,11 +40,13 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
         }
     }
 
+    // C (count) loop for making sure we have enough edges in the MST
     for (c = 1; c < v; c++) {
         min_node = -1;
         min_node_connection = -1;
         min_weight = MAX_WEIGHT + 1;
 
+        // Find minimum edge
         for (i = 0; i < v; i++) {
             if (!in_mst[i] && d[i] < min_weight) {
                 min_node = i;
@@ -53,10 +55,12 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v) {
             }
         }
 
+        // Update in_mst and add edge to MST
         in_mst[min_node] = true;
         mst[min_node][min_node_connection] = g[min_node][min_node_connection];
         mst[min_node_connection][min_node] = g[min_node_connection][min_node];
 
+        // Update candidate edges with new/better edges from new vertex
         for (i = 0; i < v; i++) {
             if (!in_mst[i] && g[min_node][i] < d[i]) {
                 d[i] = g[min_node][i];

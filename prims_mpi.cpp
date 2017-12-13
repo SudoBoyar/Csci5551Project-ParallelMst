@@ -66,6 +66,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
         min_node_connection = v + 1;
         min_weight = MAX_WEIGHT + 1;
 
+        // Find process local edge
         for (i = 0; i < perProcess; i++) {
             if (!in_mst[i + myStart] && d[i] < min_weight) {
                 min_node = i + myStart;
@@ -84,6 +85,7 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
         }
         MPI_Allreduce(&min_node_connection, &g_min_connection, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
+        // All reduce the new vertex
         if (min_node_connection != g_min_connection) {
             // Mine wasn't the min
             min_node = v + 1;
@@ -91,12 +93,14 @@ void adjacency_matrix_prims(weight_t **g, weight_t **mst, const int v, int numPr
 
         MPI_Allreduce(&min_node, &g_min_node, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
+        // Update in_mst marker and add edge to MST
         in_mst[g_min_node] = true;
         if (myProcessId == 0) {
             mst[g_min_node][g_min_connection] = g[g_min_node][g_min_connection];
             mst[g_min_connection][g_min_node] = g[g_min_node][g_min_connection];
         }
 
+        // Update candidate edges
         for (i = 0; i < perProcess; i++) {
             if (!in_mst[i + myStart] && myG[i][g_min_node] < d[i]) {
                 d[i] = myG[i][g_min_node];
